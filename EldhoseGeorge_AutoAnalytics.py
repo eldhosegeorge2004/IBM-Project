@@ -201,6 +201,21 @@ def main():
         
     if page == "1. Upload & Profile":
         st.header("Upload your Dataset")
+        
+        if st.button("Load Sample Dataset (Titanic)"):
+            try:
+                url = "https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv"
+                df = pd.read_csv(url)
+                st.session_state.raw_data = df
+                st.session_state.cleaned_data = df.copy()
+                st.session_state.cleaning_log = ["Sample Titanic dataset loaded successfully."]
+                st.success("Sample dataset loaded successfully!")
+            except Exception as e:
+                st.error(f"Error loading sample data: {e}")
+                
+        st.write("---")
+        st.write("OR Upload your own:")
+        
         uploaded_file = st.file_uploader("Choose a CSV or Excel file", type=['csv', 'xlsx'])
         
         if uploaded_file is not None:
