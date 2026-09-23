@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+generate_report.py
+app.py
+cleaning.py
+charts.py
+insights.py
+model.py
