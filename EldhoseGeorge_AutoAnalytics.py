@@ -165,6 +165,11 @@ def render_model_ui(df: pd.DataFrame):
     st.write("Build a simple predictive model (e.g., Logistic Regression for binary classification).")
     df_model = df.dropna()
     
+    # Drop high-cardinality categorical columns before encoding to avoid clutter
+    for col in df_model.select_dtypes(include=['object', 'category']).columns:
+        if df_model[col].nunique() > 15:
+            df_model = df_model.drop(columns=[col])
+            
     # One-hot encode categorical variables for modeling
     df_encoded = pd.get_dummies(df_model, drop_first=True)
     # Get all numeric or boolean columns (boolean comes from get_dummies in newer pandas)
