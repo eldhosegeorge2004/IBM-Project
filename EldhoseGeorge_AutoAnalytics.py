@@ -71,7 +71,7 @@ def render_charts_ui(df: pd.DataFrame):
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        chart_type = st.selectbox("Chart Type", ["Bar Chart", "Scatter Plot", "Line Chart"])
+        chart_type = st.selectbox("Chart Type", ["Bar Chart", "Pie Chart", "Scatter Plot", "Line Chart"])
         
     if chart_type == "Bar Chart":
         if not categorical_cols or not numeric_cols:
@@ -88,6 +88,23 @@ def render_charts_ui(df: pd.DataFrame):
         if st.button("Generate Chart"):
             grouped_df = df.groupby(x_axis)[y_axis].agg(agg_func).reset_index()
             fig = px.bar(grouped_df, x=x_axis, y=y_axis, title=f"{agg_func.capitalize()} of {y_axis} by {x_axis}")
+            st.plotly_chart(fig, use_container_width=True)
+            
+    elif chart_type == "Pie Chart":
+        if not categorical_cols or not numeric_cols:
+            st.warning("Need at least one categorical and one numeric column for Pie Chart.")
+            return
+            
+        with col2:
+            names = st.selectbox("Category (Names)", categorical_cols)
+        with col3:
+            values = st.selectbox("Metric (Values)", numeric_cols)
+            
+        agg_func = st.selectbox("Aggregation", ["sum", "mean", "count"])
+        
+        if st.button("Generate Chart"):
+            grouped_df = df.groupby(names)[values].agg(agg_func).reset_index()
+            fig = px.pie(grouped_df, names=names, values=values, title=f"{agg_func.capitalize()} of {values} by {names}")
             st.plotly_chart(fig, use_container_width=True)
             
     elif chart_type == "Scatter Plot":
