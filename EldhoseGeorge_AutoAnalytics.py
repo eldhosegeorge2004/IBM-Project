@@ -164,14 +164,18 @@ def render_insights_ui(df: pd.DataFrame):
 def render_model_ui(df: pd.DataFrame):
     st.write("Build a simple predictive model (e.g., Logistic Regression for binary classification).")
     df_model = df.dropna()
-    numeric_cols = df_model.select_dtypes(include=['number']).columns.tolist()
+    
+    # One-hot encode categorical variables for modeling
+    df_encoded = pd.get_dummies(df_model, drop_first=True)
+    # Get all numeric or boolean columns (boolean comes from get_dummies in newer pandas)
+    numeric_cols = df_encoded.select_dtypes(include=['number', 'bool']).columns.tolist()
     
     if len(numeric_cols) < 2:
-        st.warning("Need at least two numeric columns to build a model.")
+        st.warning("Need at least two numeric/encoded columns to build a model.")
         return
         
     st.subheader("Configuration")
-    target_col = st.selectbox("Target Variable (Must be binary numeric 0/1 for Logistic Regression)", numeric_cols)
+    target_col = st.selectbox("Target Variable (Must be binary for Logistic Regression)", numeric_cols)
     feature_cols = st.multiselect("Feature Variables", [c for c in numeric_cols if c != target_col])
     
     if st.button("Train Model"):
@@ -179,8 +183,8 @@ def render_model_ui(df: pd.DataFrame):
             st.error("Please select at least one feature.")
             return
             
-        X = df_model[feature_cols]
-        y = df_model[target_col]
+        X = df_encoded[feature_cols]
+        y = df_encoded[target_col]
         
         unique_y = np.unique(y)
         if len(unique_y) != 2:
