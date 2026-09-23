@@ -57,7 +57,7 @@ def render_cleaning_ui(df: pd.DataFrame):
             
     st.subheader("3. Column Data Types")
     st.write("Current types:")
-    st.write(df.dtypes)
+    st.dataframe(df.dtypes.astype(str))
     
     return df, log_entries
 
@@ -275,7 +275,7 @@ def main():
             for col in df.columns:
                 dtype = df[col].dtype
                 missing = df[col].isna().sum()
-                buffer.append({"Column": col, "Type": dtype, "Missing Values": missing})
+                buffer.append({"Column": col, "Type": str(dtype), "Missing Values": missing})
             st.table(pd.DataFrame(buffer))
             
     elif page == "2. Clean":
